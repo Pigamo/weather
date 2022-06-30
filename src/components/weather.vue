@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-const key = import.meta.env.API_KEY
+const key = process.env.API_KEY
 const city = ref('Toronto')
 const conditions = reactive({
   weather: '',
