@@ -1,8 +1,4 @@
 <template>
-  <!-- <div
-    class="absolute w-full h-full transition-opacity bg-blue-900 -z-1"
-    :class="[conditions.weather == 'Clouds' ? 'change' : '']"
-  ></div> -->
   <div
     class="flex flex-wrap items-center transition-colors transition-background min-h-screen md:h-screen md:min-h-screen-sm md:p-8 px-8 py-4 justify-around"
     :style="[
@@ -10,7 +6,7 @@
     ]"
   >
     <div class="md:text-8xl text-5xl md:p-8 pt-8">
-      {{ city.charAt(0).toUpperCase() + city.slice(1) }}
+      {{ cityName.charAt(0).toUpperCase() + cityName.slice(1) }}
     </div>
 
     <div
@@ -60,15 +56,10 @@
         <div v-else i-carbon-fog class="text-9xl"></div>
       </div>
       <div class="flex items-start flex-wrap w-full justify-evenly pt-4">
-        <!-- <div>
-                <h4 class="text-2xl p-4">Temperature</h4>
-          <div class="text-lg">{{ conditions.temp.toFixed() }}C</div>
-        </div> -->
         <div>
           <div class="text-2xl pb-4">Wind</div>
           <div class="text-md">{{ conditions.wind.speed }} km/hr</div>
           <div class="text-md">{{ conditions.wind.deg }} degrees</div>
-          <!-- <div class="p-4">{{ conditions.wind.gust }}</div> -->
         </div>
         <div>
           <h4 class="text-2xl pb-4">Humidity</h4>
@@ -93,19 +84,24 @@
     class="flex flex-col items-center justify-between w-full p-10 bg-light-400"
   >
     <h2 class="text-3xl pb-5">Search Weather By City</h2>
-    <input class="w-60 text-center text-2xl p-2" v-model="city" type="text" />
+    <input
+      class="w-60 text-center text-2xl p-2"
+      :class="[error ? 'bg-red-200' : '']"
+      v-model="city"
+      type="text"
+    />
+
     <button
       class="w-60 p-2 bg-indigo-900 text-light-200 text-xl"
       @click.prevent="getLoc(city)"
     >
       Check Weather
     </button>
+    <div v-if="error">No city with that name</div>
   </div>
 </template>
 
 <script setup lang="ts">
-const key = import.meta.env.API_KEY
-console.log(key)
 const city = ref('Toronto')
 const conditions = reactive({
   weather: '',
@@ -119,44 +115,45 @@ const conditions = reactive({
   temp: 0,
   humidity: 0,
 })
-
+const cityName = ref('Toronto')
+const error = ref(false)
 const getLat = async (city: string) => {
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=1&appid=${key}`
+      `https://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=1&appid=5f5604ff8a6d663ad62ad8ac5d3ba2c1`
     )
     const data = res.json()
     return data
-  } catch (err) {
-    console.log(err)
-  }
+  } catch (err) {}
 }
 const getWeather = async (lat: string, lon: string) => {
-  console.log(lat, lon)
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=5f5604ff8a6d663ad62ad8ac5d3ba2c1&units=metric`
     )
     const data = res.json()
     return data
-  } catch (err) {
-    console.log(err)
-  }
+  } catch (err) {}
 }
 const getLoc = async (location: string) => {
-  const data = await getLat(location)
-
-  console.log('~~~~~~~~~~~~~~~~~~~~~~~\nDATA: ', data[0])
-  console.log('lat: ', data[0].lat, '\nlong: ', data[0].lon)
-  const weather = await getWeather(data[0].lat, data[0].lon)
-  console.log(weather)
-  console.log(weather.weather[0].main)
-  conditions.weather = weather.weather[0].main
-  conditions.sky = weather.weather[0].description
-  conditions.wind = weather.wind
-  conditions.temp = weather.main.temp
-  conditions.humidity = weather.main.humidity
-  conditions.clouds = weather.clouds.all
+  error.value = false
+  try {
+    const data = await getLat(location)
+    try {
+      const weather = await getWeather(data[0].lat, data[0].lon)
+      conditions.weather = weather.weather[0].main
+      conditions.sky = weather.weather[0].description
+      conditions.wind = weather.wind
+      conditions.temp = weather.main.temp
+      conditions.humidity = weather.main.humidity
+      conditions.clouds = weather.clouds.all
+      cityName.value = city.value
+    } catch (err) {
+      error.value = true
+    }
+  } catch (err) {
+    error.value = true
+  }
 }
 getLoc('Toronto')
 
@@ -166,25 +163,4 @@ const scrollView = () => {
 }
 </script>
 
-<style scoped>
-@keyframes wipe {
-  0% {
-    opacity: 1;
-  }
-  25% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 0;
-  }
-  75% {
-    opacity: 0.25;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-.change {
-  animation: change 1s linear once;
-}
-</style>
+<style scoped></style>
