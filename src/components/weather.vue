@@ -121,7 +121,7 @@ const conditions = reactive({
 const getLat = async (city: string) => {
   try {
     const res = await fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=${
+      `https://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=${
         import.meta.env.API_KEY
       }`
     )
