@@ -4,7 +4,7 @@
 
 [build]
   publish = "dist"
-  command = "npx pnpm i --store=node_modules/.pnpm-store && npx API_KEY=5f5604ff8a6d663ad62ad8ac5d3ba2c1 pnpm run build 
+  command = "API_KEY=5f5604ff8a6d663ad62ad8ac5d3ba2c1 npx pnpm i --store=node_modules/.pnpm-store && npx pnpm run build 
 "
 
 [[redirects]]
