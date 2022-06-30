@@ -121,7 +121,9 @@ const conditions = reactive({
 const getLat = async (city: string) => {
   try {
     const res = await fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=1&appid=5f5604ff8a6d663ad62ad8ac5d3ba2c1`
+      `http://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=${
+        import.meta.env.API_KEY
+      }`
     )
     const data = res.json()
     return data
@@ -133,7 +135,9 @@ const getWeather = async (lat: string, lon: string) => {
   console.log(lat, lon)
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=5f5604ff8a6d663ad62ad8ac5d3ba2c1&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${
+        import.meta.env.API_KEY
+      }&units=metric`
     )
     const data = res.json()
     return data
