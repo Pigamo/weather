@@ -67,7 +67,7 @@
         </div>
       </div>
     </div>
-    <div class="flex items-center justify-center w-full self-end">
+    <div class="flex items-center justify-center w-full">
       <div
         @click.prevent="scrollView"
         class="border-2 rounded-full p-1.5 bg-gray-100 hover:cursor-pointer hover:bg-gray-200 transition-background-color"
