@@ -104,6 +104,7 @@
 </template>
 
 <script setup lang="ts">
+const key = import.meta.env.API_KEY
 const city = ref('Toronto')
 const conditions = reactive({
   weather: '',
@@ -121,9 +122,7 @@ const conditions = reactive({
 const getLat = async (city: string) => {
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=${
-        import.meta.env.API_KEY
-      }`
+      `https://api.openweathermap.org/geo/1.0/direct?q=${city},&limit=1&appid=${key}`
     )
     const data = res.json()
     return data
@@ -135,9 +134,7 @@ const getWeather = async (lat: string, lon: string) => {
   console.log(lat, lon)
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${
-        import.meta.env.API_KEY
-      }&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}&units=metric`
     )
     const data = res.json()
     return data
