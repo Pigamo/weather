@@ -12,6 +12,7 @@
   "dependencies": {
     "@vueuse/core": "^8.7.5",
     "vue": "^3.2.37",
+    "vue-3d-model": "^2.0.0-alpha.2",
     "vue-router": "^4.0.16"
   },
   "devDependencies": {

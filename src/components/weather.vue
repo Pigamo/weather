@@ -1,17 +1,25 @@
 <template>
   <div
-    class="flex flex-wrap items-center transition-colors transition-background min-h-screen md:h-screen md:min-h-screen-sm md:p-8 px-8 py-4 justify-around"
+    class="flex flex-wrap items-center transition-colors transition-background md:h-screen min-h-screen-sm md:p-4 px-4 py-4 justify-around"
     :style="[
       `transition: background 2s; background: linear-gradient(to bottom,  rgba(200,200,200,1), rgba(255,255,255,0.5) ${conditions.clouds}%), url(./mountains.svg) no-repeat bottom; background-size:cover`,
     ]"
   >
-    <div class="md:text-8xl text-5xl md:p-8 pt-8">
+    <div
+      class="md:w-1/2 pt-8"
+      :class="
+        cityName.length > 15
+          ? 'text-3xl md:text-5xl'
+          : 'sm:text-8xl text-6xl md:p-8'
+      "
+    >
       {{ cityName.charAt(0).toUpperCase() + cityName.slice(1) }}
     </div>
 
     <div
-      v-if="conditions.weather != ''"
-      class="grid grid-cols-2 grid-rows-2 w-full md:w-auto items-start justify-end text-left gap-3 pt-8"
+      v-if="conditions.weather !== ''"
+      class="grid grid-cols-2 grid-rows-2 items-start text-left gap-3 pt-8"
+      style="width: 400px"
     >
       <div class="flex flex-col items-start md:pr-8">
         <div class="text-5xl md:text-7xl">{{ conditions.temp.toFixed() }}C</div>
@@ -20,33 +28,33 @@
         </div>
       </div>
       <div
-        v-if="conditions.weather == 'Clear'"
+        v-if="conditions.weather === 'Clear'"
         i-carbon-sunny
         class="text-9xl"
-      ></div>
+      />
       <div
-        v-else-if="conditions.weather == 'Clouds'"
+        v-else-if="conditions.weather === 'Clouds'"
         i-carbon-cloudy
         class="text-9xl"
-      ></div>
+      />
       <div
         v-else-if="
-          conditions.weather == 'Rain' || conditions.weather == 'Drizzle'
+          conditions.weather === 'Rain' || conditions.weather === 'Drizzle'
         "
         i-carbon-rain
         class="text-9xl"
-      ></div>
+      />
       <div
-        v-else-if="conditions.weather == 'Snow'"
+        v-else-if="conditions.weather === 'Snow'"
         i-carbon-snow
         class="text-9xl"
-      ></div>
+      />
       <div
-        v-else-if="conditions.weather == 'Thunderstorm'"
+        v-else-if="conditions.weather === 'Thunderstorm'"
         i-carbon-thunderstorm
         class="text-9xl"
-      ></div>
-      <div v-else i-carbon-fog class="text-9xl"></div>
+      />
+      <div v-else i-carbon-fog class="text-9xl" />
 
       <div class="pl-1">
         <div class="text-2xl pb-4">Wind</div>
@@ -61,7 +69,7 @@
 
     <div
       id="i"
-      class="flex flex-col items-center justify-between w-full px-10 pb-10"
+      class="flex flex-col items-center justify-between w-full px-10 pb-10 relative"
     >
       <h2 class="text-xl md:text-3xl pb-5">Search Weather By City</h2>
       <input
@@ -77,7 +85,7 @@
       >
         Check Weather
       </button>
-      <div v-if="error">No city with that name</div>
+      <div class="absolute bottom-0" v-if="error">No city with that name</div>
     </div>
   </div>
 </template>
