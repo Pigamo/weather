@@ -1,8 +1,17 @@
 <script setup lang="ts">
-//City is used to pass the values onto the API
+//List contains city objects loaded from API
+const cityList = ref({})
+//Individual City Object chosen from cityList
+const cityObj = ref({})
 
+//City name for input purposes
+const city = ref('Toronto, Ontario, CA')
 //CityName is used for UI Purposes, to display the name of the City on submit, not before.
 const cityName = ref('Toronto, Ontario, CA')
+
+//UI display of error.
+const error = ref(false)
+
 //A reactive object with weather parameters, able to be set and changed during runtime, with exceptional page speed.
 const conditions = reactive({
   weather: '',
@@ -16,12 +25,6 @@ const conditions = reactive({
   temp: 0,
   humidity: 0,
 })
-
-const cityList = ref({})
-const city = ref('Toronto, Ontario, CA')
-const cityObj = ref({})
-//UI display of error.
-const error = ref(false)
 
 // Calls the API, but API key is exposed.
 // I Would mitigate with an express server backend, but considering this isn't public, it's ok.
@@ -50,42 +53,58 @@ const checkMulti = async () => {
   try {
     const data = await getGeoFromCity(city.value)
     cityList.value = data
+    if (city.value == '') cityList.value = {}
   } catch (err) {
     console.log(err)
   }
 }
 const getMultiCity = useDebounceFn(checkMulti, 200)
 
-// Async function that converts city to Long and Lat coordinates,
-// then sends that information to call the weather API
+// Async function that takes lat and lon data from chosen city
+// to call the weather API
 const callWeather = async (data: any) => {
-  //Set UI Error value as false.
-  //empty city list
   if (data.lon != '') {
     error.value = false
     try {
-      // if promise resolves, await promise of sending that data to the openweather API.
+      //await promise of openweather API Weather data
       const weather = await getWeather(data.lat, data.lon)
-      // The next functions are setting the reactive values. Weather, sky, wind etc.
+
+      // Setting the reactive values: Weather, sky, wind etc.
       conditions.weather = weather.weather[0].main
       conditions.sky = weather.weather[0].description
       conditions.wind = weather.wind
       conditions.temp = weather.main.temp
       conditions.humidity = weather.main.humidity
       conditions.clouds = weather.clouds.all
+
+      // Setting the UI name to the full city name. Updates after so it doesn't disturb UI on updates.
       cityName.value = city.value
+
+      //Double check to empty the city chosen for next time.
       cityObj.value = {}
-      console.log(cityName.value)
     } catch (err) {
       error.value = true
+      //originally used to set error, but choosing city makes this mostly obsolete.
     }
   }
 }
-
+// Watches city value for changes
 watch(city, () => {
   error.value = false
+  //Check for empty city to wipe clean
+  if (city.value == '') cityList.value = {}
+  // if checks completed, generate a list of cities to choose from.
   if (city.value != '' && !city.value.includes(',')) getMultiCity()
 })
+
+// Assign city data
+const assignCity = (cities: object) => {
+  cityObj.value = cities
+  cityList.value = {}
+  city.value = `${cities.name}, ${cities.state ? cities.state + ', ' : ''}${
+    cities.country
+  }`
+}
 
 // Call default with Toronto to enable formatting
 const setOrigin = async () => {
@@ -100,13 +119,6 @@ const setOrigin = async () => {
 }
 setOrigin()
 
-const assignCity = (cities: object) => {
-  cityObj.value = cities
-  cityList.value = {}
-  city.value = `${cities.name}, ${cities.state ? cities.state + ', ' : ''}${
-    cities.country
-  }`
-}
 //### This was originally used to scroll down to the bottom to get to the city search UI,
 //### but it was too visually complicated for something so simple.
 
@@ -195,10 +207,11 @@ const assignCity = (cities: object) => {
 
     <div
       id="i"
-      class="flex flex-col items-center justify-start w-full px-10 pb-10 relative h-64 overflow-hidden"
+      class="flex flex-col items-center justify-start w-full px-10 pb-10 relative h-70 overflow-hidden"
     >
       <h2 class="text-xl md:text-3xl pb-5">Search Weather By City</h2>
       <input
+        @click.prevent="city = ''"
         class="w-60 text-center text-2xl p-2"
         :class="[error ? 'bg-red-200' : '']"
         v-model="city"
