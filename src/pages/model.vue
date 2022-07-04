@@ -6,7 +6,7 @@
     src="./modem.glb"
     ar
     ar-modes="webxr scene-viewer quick-look"
-    skybox-image="./lebombo_4k.hdr"
+    skybox-image="./lebombo_1k.hdr"
     field-of-view="5deg"
     camera-orbit="110deg 70deg "
     shadow-intensity="1"
